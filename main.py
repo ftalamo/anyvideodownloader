@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, send_file, after_this_request
 from app.service.downloader import Downloader
+from app.service.downloader_vimeo import VimeoD
+from app.service.urldetector import  detect_url
 import glob
 import os
 import jsonify
@@ -30,6 +32,10 @@ def descargar():
     url = request.form.get("url")
     mensaje = ""
     try:
+        domain = detect_url(url)
+        sites = ['vimeo', 'espn','tokyvideo', 'crunchyroll']
+        if any(site in domain for site in sites):
+            return jsonify({"error": "Notenemos soporte actualmente para este dominio"}), 500
         downloader = Downloader(url)
         downloader.download()
         mensaje = "✅ Video descargado correctamente."
