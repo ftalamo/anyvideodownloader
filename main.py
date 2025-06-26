@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_file, after_this_request
 from app.service.downloader import Downloader
 from app.service.downloader_vimeo import VimeoD
 from app.service.urldetector import  detect_url
+from app.service.socialnetworkdetector import detectar_red_social
 import glob
 import os
 import jsonify
@@ -36,7 +37,8 @@ def descargar():
         sites = ['vimeo', 'espn','tokyvideo', 'crunchyroll']
         if any(site in domain for site in sites):
             return jsonify({"error": "Notenemos soporte actualmente para este dominio"}), 500
-        downloader = Downloader(url)
+        social = detectar_red_social(url)
+        downloader = Downloader(url, social)
         downloader.download()
         mensaje = "✅ Video descargado correctamente."
         # Buscar el archivo más reciente en la carpeta PATH
